@@ -70,6 +70,7 @@
                             text-gray-800
                             hover:bg-green-800
                         "
+                        @click="contacting = true"
                     >
                         Let's chat
                     </jet-button>
@@ -91,8 +92,16 @@
                     pt-3
 
                 "
-            >Skills</h2>
+            >Shitty</h2>
             
+            <div class="grid grid-cols-2">
+                <div v-for="skill in skills">
+                    <Skill :background="skill.color">
+                        {{ skill.name }}
+                    </Skill>
+                </div>
+            </div>
+
             <div class="flex justify-center mt-10">
                 <jet-button
                     class="
@@ -103,6 +112,7 @@
                         text-gray-200
                         hover:bg-indigo-700
                     "
+                    @click="contacting = true"
                 >
                     Get in touch
                 </jet-button>
@@ -118,7 +128,23 @@
             font-bold
             pt-3
            "
-            >Projects</h2>
+            >BObo</h2>
+
+            <div v-for="(project, index) in projects">
+                <Project :title="project.title" :description="project.description" :color="project.color">
+
+                </Project>
+
+                <!-- <AcademicCapIcon class="size-20">
+
+                </AcademicCapIcon> -->
+                <!-- <template v-if="project"> -->
+                    <component :is="getIconComponent(project,index)" class="size-20">
+    
+                    </component>
+
+                <!-- </template> -->
+            </div>
 
             <div class="flex justify-center mt-10">
                 <jet-button
@@ -130,6 +156,7 @@
                         text-gray-800
                         hover:bg-purple-700
                     "
+                    @click="contacting = true"
                 >
                     Know more
                 </jet-button>
@@ -152,20 +179,73 @@
                     flex justify-evenly items-center
                 "
             >
-                Github
-                Twitter
-                StackOverflow
+                <Link class="border-b pb-1 hover:text-gray-50 px-2" href="">Github</Link>
+                <Link class="border-b pb-1 hover:text-gray-50 px-2" href="">Twitter</Link>
+                <Link class="border-b pb-1 hover:text-gray-50 px-2" href="">StackOverflow</Link>
             </div>
         </Section>
+
+        <jet-modal :show="contacting" @close="contacting=null">
+            <div class="bg-gray-50 shadow-2xl p-8">
+                <p class="text-gray-600 text-2xl font-extrabold text-center">Let me know some details.</p>
+
+
+                <form
+                    class="flex flex-col items-center p-16"
+                    @submit.prevent="submit"
+                >
+                    <input
+                        class="px-5 py-3 w-96 border border-gray-600 rounded"
+                        type="email"
+                        name="email"
+                        placeholder="Your email"
+                    />
+
+                    <!-- <jet-input-error :message="form.errors.email"/> -->
+
+                    <textarea
+                        class="px-5 py-3 w-96 border border-gray-600 rounded mt-5"
+                        name="message"
+                        placeholder="The details :)"
+                    ></textarea>
+
+                    <!-- <jet-input-error :message="form.errors.message"/> -->
+
+                    <!-- :disabled="form.processing" -->
+                    <jet-button
+                        class="px-5 py-3 mt-5 w-96 bg-purple-400 justify-center rounded-xl text-sm"
+                    >
+                        <!-- <span class="animate-spin mr-1" v-show="form.processing">
+                            &#9696;
+                        </span> -->
+
+                        <!-- <span v-show="!form.processing"> -->
+                            Get in touch
+                        <!-- </span> -->
+                    </jet-button>
+                </form>
+
+
+            </div>
+
+        </jet-modal>
     </div>
 </template>
 <script>
 
 import { Head, Link } from '@inertiajs/vue3';
-import { defineComponent } from 'vue';
+import { defineAsyncComponent, defineComponent } from 'vue';
 import JetApplicationMark from '../Components/ApplicationMark.vue'
 import JetButton from '../Components/PrimaryButton.vue'
-import Section from '../Components/Section.vue'
+import JetModal from '../Components/Modal.vue'
+import Section from '../Components/Childrens/Section.vue'
+import Skill from '../Components/Childrens/Skills.vue'
+import Project from '../Components/Childrens/Projects.vue'
+// import {} from '@heroicons/vue/24/solid'
+
+// import * as heroIcons from '@heroicons/vue/24/solid';
+// import {AcademicCapIcon} from '@heroicons/vue/24/solid'
+// import Project from '../Components/Childrens/Projects.vue'
 
     export default defineComponent({
         components: {
@@ -174,10 +254,35 @@ import Section from '../Components/Section.vue'
             JetApplicationMark,
             Section,
             JetButton,
+            Skill,
+            JetModal,
+            Project,
+            // BeakerIcon,
+            // AcademicCapIcon
         },
         props: {
             canLogin: Boolean,
             canRegister: Boolean,
+            skills: Object,
+            projects: Object,
+        },
+        data() {
+            return {
+                contacting: null,
+            }
+        },
+        methods: {
+            getIconComponent(item,index) {
+                // )
+                return defineAsyncComponent(() => {
+                    return import('@heroicons/vue/24/solid/AcademicCapIcon')
+                    // .then((module) => module.default)
+                    .catch((err) => {
+                        console.error("Error loading icon:", err);
+                        return null; // Handle error if icon fails to load
+                    });
+                });
+            },
         }
     })
 </script>
